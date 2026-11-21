@@ -112,7 +112,7 @@
     <main>
       <!-- TELA 1: CENTRAL DE MÓDULOS (ROUPAGEM CONLICITAÇÃO AZUL TURQUESA) -->
       <section id="view-hub" class="view-section active">
-        <div class="hub-grid">
+                <div class="hub-grid">
           <div class="hub-card" onclick="mudarTela('atas')">
             <div class="hub-icon">
               <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
@@ -122,7 +122,85 @@
             <span class="tag-live" id="hub-badge-atas">Ativo na Nuvem</span>
           </div>
 
-            <!-- Modal Nova Ata -->
+          <div class="hub-card" onclick="abrirModal('modal-nova-ata')">
+            <div class="hub-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+            </div>
+            <h3>Cadastrar Nova Ata</h3>
+            <p>Lançar pregão ganho e itens registrados</p>
+            <span class="tag-live">Acesso Rápido</span>
+          </div>
+
+          <div class="hub-card" onclick="alert('Módulo em construção: Vamos conectar seu Robô de Lances aqui!')">
+            <div class="hub-icon">
+              <svg viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </div>
+            <h3>Robô de Lances</h3>
+            <p>Integração com extensão Compras.gov e Licitanet</p>
+            <span class="tag-soon">Próxima Etapa</span>
+          </div>
+
+          <div class="hub-card" onclick="alert('Módulo em construção: Cadastro de Fornecedores e Margem de Lucro!')">
+            <div class="hub-icon">
+              <svg viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+            <h3>Fornecedores & Custos</h3>
+            <p>Cotação de preços e cálculo de margem líquida</p>
+            <span class="tag-soon">Em Breve</span>
+          </div>
+
+          <div class="hub-card" onclick="alert('Módulo em construção: Radar de Editais PNCP!')">
+            <div class="hub-icon">
+              <svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+            <h3>Encontrar Licitações</h3>
+            <p>Busca inteligente de oportunidades no PNCP</p>
+            <span class="tag-soon">Em Breve</span>
+          </div>
+
+          <div class="hub-card" onclick="exportarCSV()">
+            <div class="hub-icon">
+              <svg viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            </div>
+            <h3>Backup & Relatórios</h3>
+            <p>Exportar planilha completa para o computador</p>
+            <span class="tag-live">1 Clique</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-atas" class="view-section">
+        <div class="back-bar">
+          <button class="action-btn btn-outline" onclick="mudarTela('hub')">← Voltar ao Painel Inicial</button>
+          <button class="action-btn btn-outline" onclick="carregarAtas()">↻ Atualizar Dados</button>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="card">
+            <div class="kpi-label">Atas Cadastradas</div>
+            <div id="kpi-total-atas" class="kpi-value">0</div>
+          </div>
+          <div class="card">
+            <div class="kpi-label">Valor Total Registrado</div>
+            <div id="kpi-valor-total" class="kpi-value text-green">R$ 0,00</div>
+          </div>
+          <div class="card">
+            <div class="kpi-label">Saldo Próprio Disponível</div>
+            <div id="kpi-saldo-proprio" class="kpi-value text-turquesa">R$ 0,00</div>
+          </div>
+          <div class="card">
+            <div class="kpi-label">Vencendo em 60 dias</div>
+            <div id="kpi-vencendo" class="kpi-value text-amber">0</div>
+          </div>
+        </div>
+
+        <div id="lista-atas">
+          <div class="card" style="text-align:center; color:#64748b; padding:32px;">Carregando atas...</div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <!-- Modal Nova Ata -->
   <div id="modal-nova-ata" class="modal-overlay">
     <div class="modal-box">
       <div class="modal-header">
@@ -130,60 +208,19 @@
         <button class="close-btn" onclick="fecharModal('modal-nova-ata')">X</button>
       </div>
       <div class="form-grid">
-        <div>
-          <label>Nº do Pregão *</label>
-          <input id="ata-pregao" type="text" placeholder="Ex: 015/2026">
-        </div>
-        <div>
-          <label>Nº da Ata (ARP)</label>
-          <input id="ata-numero" type="text" placeholder="Ex: 042/2026">
-        </div>
-        <div class="col-2">
-          <label>Órgão Gerenciador *</label>
-          <input id="ata-orgao" type="text" placeholder="Ex: Prefeitura Municipal de Cacoal - RO">
-        </div>
-        <div>
-          <label>Portal</label>
-          <input id="ata-portal" type="text" value="Licitanet">
-        </div>
-        <div>
-          <label>Data de Assinatura</label>
-          <input id="ata-assinatura" type="date">
-        </div>
-        <div class="col-2">
-          <label>Permite Carona (Adesão)?</label>
-          <select id="ata-carona">
-            <option value="true">Sim (Permite Adesão - Limite 2x)</option>
-            <option value="false">Não permite</option>
-          </select>
-        </div>
-        <div class="col-2" style="margin-top:8px; padding-top:12px; border-top:1px solid #e2e8f0;">
-          <strong style="color:#0891b2; font-size:13px;">Dados do Item Ganho</strong>
-        </div>
-        <div>
-          <label>Item Nº</label>
-          <input id="item-num" type="text" value="1">
-        </div>
-        <div>
-          <label>Marca</label>
-          <input id="item-marca" type="text" placeholder="Ex: Dell">
-        </div>
-        <div class="col-2">
-          <label>Descrição do Produto/Serviço *</label>
-          <input id="item-desc" type="text" placeholder="Ex: Notebook Core i7 16GB RAM">
-        </div>
-        <div>
-          <label>Unidade</label>
-          <input id="item-unid" type="text" value="UN">
-        </div>
-        <div>
-          <label>Qtd. Ganha *</label>
-          <input id="item-qtd" type="number" placeholder="100">
-        </div>
-        <div class="col-2">
-          <label>Valor Unitário (R$) *</label>
-          <input id="item-valor" type="number" step="0.01" placeholder="4500.00">
-        </div>
+        <div><label>Nº do Pregão *</label><input id="ata-pregao" type="text" placeholder="Ex: 015/2026"></div>
+        <div><label>Nº da Ata (ARP)</label><input id="ata-numero" type="text" placeholder="Ex: 042/2026"></div>
+        <div class="col-2"><label>Órgão Gerenciador *</label><input id="ata-orgao" type="text" placeholder="Ex: Prefeitura de Cacoal - RO"></div>
+        <div><label>Portal</label><input id="ata-portal" type="text" value="Licitanet"></div>
+        <div><label>Data de Assinatura</label><input id="ata-assinatura" type="date"></div>
+        <div class="col-2"><label>Permite Carona?</label><select id="ata-carona"><option value="true">Sim (Permite Adesão - Limite 2x)</option><option value="false">Não permite</option></select></div>
+        <div class="col-2" style="margin-top:8px; padding-top:12px; border-top:1px solid #e2e8f0;"><strong style="color:#0891b2; font-size:13px;">Dados do Item Ganho</strong></div>
+        <div><label>Item Nº</label><input id="item-num" type="text" value="1"></div>
+        <div><label>Marca</label><input id="item-marca" type="text" placeholder="Ex: Dell"></div>
+        <div class="col-2"><label>Descrição do Produto/Serviço *</label><input id="item-desc" type="text" placeholder="Ex: Notebook Core i7"></div>
+        <div><label>Unidade</label><input id="item-unid" type="text" value="UN"></div>
+        <div><label>Qtd. Ganha *</label><input id="item-qtd" type="number" placeholder="100"></div>
+        <div class="col-2"><label>Valor Unitário (R$) *</label><input id="item-valor" type="number" step="0.01" placeholder="4500.00"></div>
       </div>
       <div class="modal-footer">
         <button class="action-btn btn-outline" onclick="fecharModal('modal-nova-ata')">Cancelar</button>
@@ -202,25 +239,10 @@
       <input type="hidden" id="mov-item-id">
       <p id="mov-item-nome" style="font-size:13px; font-weight:600; color:#0891b2; margin-bottom:12px;"></p>
       <div style="display:flex; flex-direction:column; gap:12px;">
-        <div>
-          <label>Tipo de Baixa</label>
-          <select id="mov-tipo">
-            <option value="EMPENHO_PROPRIO">Empenho Próprio (Órgão Gerenciador)</option>
-            <option value="ADESAO_CARONA">Adesão / Carona (Outro Órgão)</option>
-          </select>
-        </div>
-        <div>
-          <label>Órgão Solicitante</label>
-          <input id="mov-orgao" type="text">
-        </div>
-        <div>
-          <label>Nº da Nota de Empenho / Processo</label>
-          <input id="mov-doc" type="text" placeholder="Ex: 2026NE000451">
-        </div>
-        <div>
-          <label>Quantidade Solicitada *</label>
-          <input id="mov-qtd" type="number" step="0.01" placeholder="Ex: 10">
-        </div>
+        <div><label>Tipo de Baixa</label><select id="mov-tipo"><option value="EMPENHO_PROPRIO">Empenho Próprio (Órgão Gerenciador)</option><option value="ADESAO_CARONA">Adesão / Carona (Outro Órgão)</option></select></div>
+        <div><label>Órgão Solicitante</label><input id="mov-orgao" type="text"></div>
+        <div><label>Nº da Nota de Empenho / Processo</label><input id="mov-doc" type="text" placeholder="Ex: 2026NE000451"></div>
+        <div><label>Quantidade Solicitada *</label><input id="mov-qtd" type="number" step="0.01" placeholder="Ex: 10"></div>
       </div>
       <div class="modal-footer">
         <button class="action-btn btn-outline" onclick="fecharModal('modal-movimentacao')">Cancelar</button>
@@ -228,19 +250,11 @@
       </div>
     </div>
   </div>
-
   <script>
     const PROJETO_ID = "eysuytxytdsqsbldeyda";
     const API_URL = "https://" + PROJETO_ID + ".supabase.co/rest/v1";
     const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5c3V5dHh5dGRzcXNibGRleWRhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyMTUzNDcsImV4cCI6MjExMDc5MTM0N30.SnyxgMCPhqeBFqLj5QDU1Kitdj4xzp9wmR_iAeA1eWk";
-
-    const headers = {
-      "apikey": API_KEY,
-      "Authorization": "Bearer " + API_KEY,
-      "Content-Type": "application/json",
-      "Prefer": "return=representation"
-    };
-
+    const headers = { "apikey": API_KEY, "Authorization": "Bearer " + API_KEY, "Content-Type": "application/json", "Prefer": "return=representation" };
     let atasCache = [];
 
     function mudarTela(tela) {
@@ -251,10 +265,7 @@
       if (btn) btn.classList.add("active");
     }
 
-    function formatarMoeda(v) {
-      return Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-    }
-
+    function formatarMoeda(v) { return Number(v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); }
     function abrirModal(id) { document.getElementById(id).classList.add("active"); }
     function fecharModal(id) { document.getElementById(id).classList.remove("active"); }
 
@@ -271,15 +282,11 @@
       try {
         const res = await fetch(API_URL + "/atas?select=*,itens_ata(*)&order=created_at.desc", { headers: headers });
         if (!res.ok) throw new Error(await res.text());
-        const atas = await res.json();
-        atasCache = atas || [];
-
+        atasCache = (await res.json()) || [];
         const badgeHub = document.getElementById("hub-badge-atas");
         if (badgeHub) badgeHub.innerText = atasCache.length + " Ata(s) Ativa(s)";
 
-        let valorTotalGeral = 0;
-        let saldoProprioGeral = 0;
-        let vencendoCount = 0;
+        let valorTotalGeral = 0, saldoProprioGeral = 0, vencendoCount = 0;
         const hoje = new Date();
 
         if (atasCache.length === 0) {
@@ -301,33 +308,85 @@
             const itens = ata.itens_ata || [];
             for (let j = 0; j < itens.length; j++) {
               const item = itens[j];
-              const qtdReg = Number(item.qtd_registrada);
-              const qtdEmp = Number(item.qtd_empenhada || 0);
-              const qtdCar = Number(item.qtd_carona || 0);
-              const valUnit = Number(item.valor_unitario);
-
+              const qtdReg = Number(item.qtd_registrada), qtdEmp = Number(item.qtd_empenhada || 0), qtdCar = Number(item.qtd_carona || 0), valUnit = Number(item.valor_unitario);
               const saldoProp = qtdReg - qtdEmp;
               const saldoCarona = ata.permite_carona ? ((qtdReg * 2) - qtdCar) : 0;
               const perc = qtdReg > 0 ? Math.max(0, Math.round((saldoProp / qtdReg) * 100)) : 0;
-
               valorTotalGeral += qtdReg * valUnit;
               saldoProprioGeral += saldoProp * valUnit;
-
               const descLimpa = (item.descricao || "").replace(/'/g, "");
               const orgaoLimpo = (ata.orgao_nome || "").replace(/'/g, "");
 
-              itensHtml += '<tr>';
-              itensHtml += '<td style="font-weight:bold; color:#0891b2;">' + item.numero_item + '</td>';
+              itensHtml += '<tr><td style="font-weight:bold; color:#0891b2;">' + item.numero_item + '</td>';
               itensHtml += '<td><div style="font-weight:600; color:#0f293a;">' + item.descricao + '</div><div style="font-size:11px; color:#64748b;">Marca: ' + (item.marca || "-") + ' | Unit: ' + formatarMoeda(valUnit) + '</div></td>';
               itensHtml += '<td class="text-right">' + qtdReg + ' ' + (item.unidade || "") + '</td>';
               itensHtml += '<td class="text-right"><div style="font-weight:bold; color:#059669;">' + saldoProp + ' ' + (item.unidade || "") + ' (' + perc + '%)</div><div class="progress-bg"><div class="progress-fill" style="width:' + perc + '%"></div></div></td>';
               itensHtml += '<td class="text-right">' + (ata.permite_carona ? (saldoCarona + ' ' + (item.unidade || "")) : '<span style="color:#94a3b8;">Bloqueado</span>') + '</td>';
-              itensHtml += '<td class="text-right"><button class="btn-sm" onclick="abrirModalBaixa(\'' + item.id + '\', \'Item ' + item.numero_item + ' - ' + descLimpa + '\', \'' + orgaoLimpo + '\')">+ Empenho / Carona</button></td>';
-              itensHtml += '</tr>';
+              itensHtml += '<td class="text-right"><button class="btn-sm" onclick="abrirModalBaixa(\'' + item.id + '\', \'Item ' + item.numero_item + ' - ' + descLimpa + '\', \'' + orgaoLimpo + '\')">+ Empenho / Carona</button></td></tr>';
             }
 
-            htmlFinal += '<div class="card ata-card"><div class="ata-header"><div>';
-            htmlFinal += '<span class="badge badge-portal">' + (ata.portal || "Portal") + '</span>';
- </script>
+            htmlFinal += '<div class="card ata-card"><div class="ata-header"><div><span class="badge badge-portal">' + (ata.portal || "Portal") + '</span><strong style="margin-left:6px; font-size:14px; color:#0f293a;">Pregão ' + ata.numero_pregao + '</strong>';
+            if (ata.numero_ata) htmlFinal += '<span style="color:#64748b; font-size:13px;"> | Ata Nº ' + ata.numero_ata + '</span>';
+            htmlFinal += '<span style="margin-left:6px;">' + badgeVenc + '</span><div class="ata-title">' + ata.orgao_nome + '</div></div><button class="btn-danger-sm" onclick="excluirAta(\'' + ata.id + '\')">Excluir</button></div>';
+            htmlFinal += '<div class="table-wrap"><table><thead><tr><th>Item</th><th>Descrição</th><th class="text-right">Qtd. Ata</th><th class="text-right">Saldo Próprio</th><th class="text-right">Saldo Carona (2x)</th><th class="text-right">Ação</th></tr></thead><tbody>' + itensHtml + '</tbody></table></div></div>';
+          }
+          container.innerHTML = htmlFinal;
+        }
+        document.getElementById("kpi-total-atas").innerText = atasCache.length;
+        document.getElementById("kpi-valor-total").innerText = formatarMoeda(valorTotalGeral);
+        document.getElementById("kpi-saldo-proprio").innerText = formatarMoeda(saldoProprioGeral);
+        document.getElementById("kpi-vencendo").innerText = vencendoCount;
+      } catch (err) { container.innerHTML = '<div class="card" style="color:#dc2626;">Erro: ' + err.message + '</div>'; }
+    }
+
+    async function salvarNovaAta() {
+      const pregao = document.getElementById("ata-pregao").value.trim(), orgao = document.getElementById("ata-orgao").value.trim(), desc = document.getElementById("item-desc").value.trim();
+      const qtd = parseFloat(document.getElementById("item-qtd").value), valor = parseFloat(document.getElementById("item-valor").value);
+      if (!pregao || !orgao || !desc || !qtd || !valor) { alert("Preencha os campos obrigatórios (*)!"); return; }
+
+      const assinatura = document.getElementById("ata-assinatura").value;
+      let vencimento = null;
+      if (assinatura) { const p = assinatura.split("-"); vencimento = (parseInt(p, 10) + 1) + "-" + p + "-" + p; }
+
+      const resAta = await fetch(API_URL + "/atas", {
+        method: "POST", headers: headers,
+        body: JSON.stringify([{ numero_pregao: pregao, numero_ata: document.getElementById("ata-numero").value.trim(), orgao_nome: orgao, portal: document.getElementById("ata-portal").value.trim(), data_assinatura: assinatura || null, data_vencimento: vencimento, permite_carona: document.getElementById("ata-carona").value === "true", status: assinatura ? "Vigente" : "Aguardando Assinatura" }])
+      });
+      if (!resAta.ok) { alert("Erro ao salvar Ata!"); return; }
+      const novaAta = (await resAta.json());
+
+      await fetch(API_URL + "/itens_ata", {
+        method: "POST", headers: headers,
+        body: JSON.stringify([{ ata_id: novaAta.id, numero_item: document.getElementById("item-num").value.trim() || "1", descricao: desc, marca: document.getElementById("item-marca").value.trim(), unidade: document.getElementById("item-unid").value.trim() || "UN", qtd_registrada: qtd, valor_unitario: valor }])
+      });
+
+      fecharModal("modal-nova-ata");
+      mudarTela("atas");
+      carregarAtas();
+    }
+
+    async function salvarMovimentacao() {
+      const itemId = document.getElementById("mov-item-id").value, tipo = document.getElementById("mov-tipo").value, qtd = parseFloat(document.getElementById("mov-qtd").value);
+      if (!qtd || qtd <= 0) { alert("Informe uma quantidade válida!"); return; }
+
+      await fetch(API_URL + "/movimentacoes_ata", {
+        method: "POST", headers: headers,
+        body: JSON.stringify([{ item_id: itemId, tipo: tipo, orgao_solicitante: document.getElementById("mov-orgao").value.trim(), numero_documento: document.getElementById("mov-doc").value.trim(), quantidade: qtd }])
+      });
+
+      const resItem = await fetch(API_URL + "/itens_ata?id=eq." + itemId, { headers: headers });
+      const itemAtual = (await resItem.json());
+      if (itemAtual) {
+        const campo = tipo === "EMPENHO_PROPRIO" ? "qtd_empenhada" : "qtd_carona";
+        const bodyUpdate = {}; bodyUpdate[campo] = Number(itemAtual[campo] || 0) + qtd;
+        await fetch(API_URL + "/itens_ata?id=eq." + itemId, { method: "PATCH", headers: headers, body: JSON.stringify(bodyUpdate) });
+      }
+      fecharModal("modal-movimentacao");
+      carregarAtas();
+    }
+
+    async function excluirAta(ataId) {
+      if (!confirm("Tem certeza que deseja excluir esta Ata e todos os seus itens?")) return;
+  </script>
 </body>
 </html>
