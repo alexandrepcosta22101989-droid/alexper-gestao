@@ -8,11 +8,27 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
     body { background-color: #f4f7f9; color: #1e293b; min-height: 100vh; display: flex; }
 
+    /* Tela de Login (Bloqueio Inicial) */
+    #tela-login { position: fixed; inset: 0; background: #0f293a; display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 16px; }
+    .login-card { background: #ffffff; border-radius: 16px; padding: 36px 28px; width: 100%; max-width: 380px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35); }
+    .login-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .login-logo { width: 42px; height: 42px; border-radius: 10px; background: #06b6d4; color: #fff; font-weight: 800; font-size: 22px; display: flex; align-items: center; justify-content: center; }
+    .login-title { font-size: 20px; font-weight: 700; color: #0f293a; }
+    .login-title span { color: #0891b2; font-weight: 500; }
+    .login-sub { font-size: 13px; color: #64748b; margin-bottom: 24px; }
+    .login-group { margin-bottom: 14px; }
+    .login-btn { width: 100%; padding: 12px; background: #0891b2; color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; margin-top: 6px; }
+    .login-btn:hover { background: #0e7490; }
+    .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .login-erro { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: 600; margin-top: 14px; display: none; text-align: center; }
+
     /* Menu Lateral Fixo (Estilo SaaS) */
     .sidebar { width: 68px; background-color: #0f293a; color: #fff; display: flex; flex-direction: column; align-items: center; padding: 16px 0; gap: 14px; flex-shrink: 0; }
     .side-logo { width: 40px; height: 40px; border-radius: 10px; background: #06b6d4; color: #fff; font-weight: 800; font-size: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; cursor: pointer; }
     .side-btn { width: 44px; height: 44px; border-radius: 10px; background: transparent; color: #94a3b8; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; font-size: 18px; }
     .side-btn:hover, .side-btn.active { background-color: #0891b2; color: #ffffff; }
+    .side-btn.logout-btn { margin-top: auto; color: #f87171; }
+    .side-btn.logout-btn:hover { background-color: #dc2626; color: #ffffff; }
 
     /* Área Principal */
     .wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; }
@@ -25,6 +41,8 @@
     .btn-outline:hover { background: #f1f5f9; border-color: #0891b2; color: #0891b2; }
     .btn-turquesa { background: #0891b2; color: #ffffff; }
     .btn-turquesa:hover { background: #0e7490; }
+    .btn-logout-top { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .btn-logout-top:hover { background: #dc2626; color: #ffffff; }
     .btn-danger-sm { background: #fee2e2; color: #dc2626; padding: 6px 10px; border-radius: 6px; font-size: 12px; border: none; cursor: pointer; font-weight: 600; }
     .btn-danger-sm:hover { background: #fecaca; }
     .btn-sm { padding: 6px 12px; font-size: 12px; background: #ecfeff; color: #0891b2; border: 1px solid #a5f3fc; border-radius: 6px; cursor: pointer; font-weight: 600; }
@@ -32,7 +50,7 @@
 
     main { max-width: 1180px; width: 100%; margin: 0 auto; padding: 32px 24px; flex: 1; }
 
-    /* Tela Inicial: Grade de Módulos (Estilo ConLicitação) */
+    /* Tela Inicial: Grade de Módulos */
     .hub-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; }
     .hub-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 34px 24px; text-align: center; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(15, 41, 58, 0.03); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
     .hub-card:hover { transform: translateY(-3px); border-color: #06b6d4; box-shadow: 0 10px 24px rgba(8, 145, 178, 0.12); }
@@ -90,12 +108,37 @@
 </head>
 <body>
 
+  <!-- TELA DE LOGIN -->
+  <div id="tela-login">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-logo">A</div>
+        <div class="login-title">ALEXPER <span>| Acesso</span></div>
+      </div>
+      <p class="login-sub">Gestão Inteligente — Faça login para acessar o painel</p>
+      
+      <form onsubmit="fazerLogin(event)">
+        <div class="login-group">
+          <label for="login-email">E-mail de acesso</label>
+          <input type="email" id="login-email" placeholder="seuemail@gmail.com" required />
+        </div>
+        <div class="login-group">
+          <label for="login-senha">Senha</label>
+          <input type="password" id="login-senha" placeholder="••••••••" required />
+        </div>
+        <button type="submit" id="btn-login" class="login-btn">Entrar no Sistema</button>
+      </form>
+      <div id="login-erro" class="login-erro"></div>
+    </div>
+  </div>
+
   <!-- Barra Lateral Esquerda -->
   <aside class="sidebar">
     <div class="side-logo" onclick="mudarTela('hub')" title="Início">A</div>
     <button id="nav-hub" class="side-btn active" onclick="mudarTela('hub')" title="Painel Inicial">⌂</button>
     <button id="nav-atas" class="side-btn" onclick="mudarTela('atas')" title="Gestão de Atas">📋</button>
     <button class="side-btn" onclick="exportarCSV()" title="Baixar Backup Planilha">⬇</button>
+    <button class="side-btn logout-btn" onclick="fazerLogoff()" title="Sair / Logoff">🚪</button>
   </aside>
 
   <div class="wrapper">
@@ -106,13 +149,13 @@
       <div class="btn-group">
         <button class="action-btn btn-outline" onclick="exportarCSV()">Baixar Backup (CSV)</button>
         <button class="action-btn btn-turquesa" onclick="abrirModal('modal-nova-ata')">+ Nova Ata Manual</button>
+        <button class="action-btn btn-logout-top" onclick="fazerLogoff()">Sair</button>
       </div>
     </header>
 
     <main>
-      <!-- TELA 1: CENTRAL DE MÓDULOS (ROUPAGEM CONLICITAÇÃO AZUL TURQUESA) -->
       <section id="view-hub" class="view-section active">
-                <div class="hub-grid">
+        <div class="hub-grid">
           <div class="hub-card" onclick="mudarTela('atas')">
             <div class="hub-icon">
               <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
@@ -168,7 +211,6 @@
           </div>
         </div>
       </section>
-
       <section id="view-atas" class="view-section">
         <div class="back-bar">
           <button class="action-btn btn-outline" onclick="mudarTela('hub')">← Voltar ao Painel Inicial</button>
@@ -200,6 +242,7 @@
       </section>
     </main>
   </div>
+
   <!-- Modal Nova Ata -->
   <div id="modal-nova-ata" class="modal-overlay">
     <div class="modal-box">
@@ -250,12 +293,87 @@
       </div>
     </div>
   </div>
+
   <script>
     const PROJETO_ID = "eysuytxytdsqsbldeyda";
-    const API_URL = "https://" + PROJETO_ID + ".supabase.co/rest/v1";
+    const BASE_URL = "https://" + PROJETO_ID + ".supabase.co";
+    const API_URL = BASE_URL + "/rest/v1";
+    const AUTH_URL = BASE_URL + "/auth/v1";
     const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV5c3V5dHh5dGRzcXNibGRleWRhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUyMTUzNDcsImV4cCI6MjExMDc5MTM0N30.SnyxgMCPhqeBFqLj5QDU1Kitdj4xzp9wmR_iAeA1eWk";
-    const headers = { "apikey": API_KEY, "Authorization": "Bearer " + API_KEY, "Content-Type": "application/json", "Prefer": "return=representation" };
+    
+    let accessToken = localStorage.getItem("alexper_token") || null;
     let atasCache = [];
+
+    function getHeaders() {
+      return {
+        "apikey": API_KEY,
+        "Authorization": "Bearer " + (accessToken || API_KEY),
+        "Content-Type": "application/json",
+        "Prefer": "return=representation"
+      };
+    }
+
+    function verificarLoginInicial() {
+      if (accessToken) {
+        document.getElementById("tela-login").style.display = "none";
+        carregarAtas();
+      } else {
+        document.getElementById("tela-login").style.display = "flex";
+      }
+    }
+
+    async function fazerLogin(event) {
+      if (event) event.preventDefault();
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-senha").value;
+      const btn = document.getElementById("btn-login");
+      const erroBox = document.getElementById("login-erro");
+
+      erroBox.style.display = "none";
+      btn.disabled = true;
+      btn.innerText = "Verificando...";
+
+      try {
+        const res = await fetch(AUTH_URL + "/token?grant_type=password", {
+          method: "POST",
+          headers: { "apikey": API_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ email: email, password: password })
+        });
+        const data = await res.json();
+
+        if (!res.ok || !data.access_token) {
+          throw new Error(data.error_description || data.msg || "E-mail ou senha incorretos.");
+        }
+
+        accessToken = data.access_token;
+        localStorage.setItem("alexper_token", accessToken);
+        document.getElementById("tela-login").style.display = "none";
+        document.getElementById("login-senha").value = "";
+        carregarAtas();
+      } catch (err) {
+        erroBox.innerText = "Falha no acesso: E-mail ou senha inválidos.";
+        erroBox.style.display = "block";
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Entrar no Sistema";
+      }
+    }
+
+    async function fazerLogoff() {
+      if (accessToken) {
+        try {
+          await fetch(AUTH_URL + "/logout", {
+            method: "POST",
+            headers: { "apikey": API_KEY, "Authorization": "Bearer " + accessToken }
+          });
+        } catch (e) {}
+      }
+      accessToken = null;
+      localStorage.removeItem("alexper_token");
+      atasCache = [];
+      document.getElementById("tela-login").style.display = "flex";
+      mudarTela("hub");
+    }
 
     function mudarTela(tela) {
       document.querySelectorAll(".view-section").forEach(function(el) { el.classList.remove("active"); });
@@ -276,11 +394,14 @@
       document.getElementById("mov-qtd").value = "";
       abrirModal("modal-movimentacao");
     }
-
     async function carregarAtas() {
       const container = document.getElementById("lista-atas");
       try {
-        const res = await fetch(API_URL + "/atas?select=*,itens_ata(*)&order=created_at.desc", { headers: headers });
+        const res = await fetch(API_URL + "/atas?select=*,itens_ata(*)&order=created_at.desc", { headers: getHeaders() });
+        if (res.status === 401 || res.status === 403) {
+          fazerLogoff();
+          return;
+        }
         if (!res.ok) throw new Error(await res.text());
         atasCache = (await res.json()) || [];
         const badgeHub = document.getElementById("hub-badge-atas");
@@ -336,7 +457,9 @@
         document.getElementById("kpi-valor-total").innerText = formatarMoeda(valorTotalGeral);
         document.getElementById("kpi-saldo-proprio").innerText = formatarMoeda(saldoProprioGeral);
         document.getElementById("kpi-vencendo").innerText = vencendoCount;
-      } catch (err) { container.innerHTML = '<div class="card" style="color:#dc2626;">Erro: ' + err.message + '</div>'; }
+      } catch (err) {
+        container.innerHTML = '<div class="card" style="color:#dc2626;">Erro ao carregar dados: ' + err.message + '</div>';
+      }
     }
 
     async function salvarNovaAta() {
@@ -346,20 +469,20 @@
 
       const assinatura = document.getElementById("ata-assinatura").value;
       let vencimento = null;
-if (assinatura) {
-  const [ano, mes, dia] = assinatura.split("-").map(Number);
-  const dataVenc = new Date(ano + 1, mes - 1, dia);
-  vencimento = dataVenc.toISOString().split("T")[0];
-}
+      if (assinatura) {
+        const [ano, mes, dia] = assinatura.split("-").map(Number);
+        const dataVenc = new Date(ano + 1, mes - 1, dia);
+        vencimento = dataVenc.toISOString().split("T")[0];
+      }
 
       const resAta = await fetch(API_URL + "/atas", {
-        method: "POST", headers: headers,
+        method: "POST", headers: getHeaders(),
         body: JSON.stringify([{ numero_pregao: pregao, numero_ata: document.getElementById("ata-numero").value.trim(), orgao_nome: orgao, portal: document.getElementById("ata-portal").value.trim(), data_assinatura: assinatura || null, data_vencimento: vencimento, permite_carona: document.getElementById("ata-carona").value === "true", status: assinatura ? "Vigente" : "Aguardando Assinatura" }])
       });
-      if (!resAta.ok) { alert("Erro ao salvar Ata!"); return; }
-      const novaAta = (await resAta.json());
+      if (!resAta.ok) { alert("Erro ao salvar Ata! Verifique se você ainda está logado."); return; }
+      const novaAta = await resAta.json();
       await fetch(API_URL + "/itens_ata", {
-        method: "POST", headers: headers,
+        method: "POST", headers: getHeaders(),
         body: JSON.stringify([{ ata_id: novaAta[0].id, numero_item: document.getElementById("item-num").value.trim() || "1", descricao: desc, marca: document.getElementById("item-marca").value.trim(), unidade: document.getElementById("item-unid").value.trim() || "UN", qtd_registrada: qtd, valor_unitario: valor }])
       });
 
@@ -368,25 +491,25 @@ if (assinatura) {
       carregarAtas();
     }
 
-        async function salvarMovimentacao() {
+    async function salvarMovimentacao() {
       const itemId = document.getElementById("mov-item-id").value;
       const tipo = document.getElementById("mov-tipo").value;
       const qtd = parseFloat(document.getElementById("mov-qtd").value);
       if (!qtd || qtd <= 0) { alert("Informe uma quantidade válida!"); return; }
 
       await fetch(API_URL + "/movimentacoes_ata", {
-        method: "POST", headers: headers,
+        method: "POST", headers: getHeaders(),
         body: JSON.stringify([{ item_id: itemId, tipo: tipo, orgao_solicitante: document.getElementById("mov-orgao").value.trim(), numero_documento: document.getElementById("mov-doc").value.trim(), quantidade: qtd }])
       });
 
-      const resItem = await fetch(API_URL + "/itens_ata?id=eq." + itemId, { headers: headers });
+      const resItem = await fetch(API_URL + "/itens_ata?id=eq." + itemId, { headers: getHeaders() });
       const listaItem = await resItem.json();
-      const itemAtual = listaItem;
+      const itemAtual = listaItem[0];
       if (itemAtual) {
         const campo = tipo === "EMPENHO_PROPRIO" ? "qtd_empenhada" : "qtd_carona";
         const bodyUpdate = {};
         bodyUpdate[campo] = Number(itemAtual[campo] || 0) + qtd;
-        await fetch(API_URL + "/itens_ata?id=eq." + itemId, { method: "PATCH", headers: headers, body: JSON.stringify(bodyUpdate) });
+        await fetch(API_URL + "/itens_ata?id=eq." + itemId, { method: "PATCH", headers: getHeaders(), body: JSON.stringify(bodyUpdate) });
       }
       fecharModal("modal-movimentacao");
       carregarAtas();
@@ -394,7 +517,7 @@ if (assinatura) {
 
     async function excluirAta(ataId) {
       if (!confirm("Tem certeza que deseja excluir esta Ata e todos os seus itens?")) return;
-      await fetch(API_URL + "/atas?id=eq." + ataId, { method: "DELETE", headers: headers });
+      await fetch(API_URL + "/atas?id=eq." + ataId, { method: "DELETE", headers: getHeaders() });
       carregarAtas();
     }
 
@@ -413,7 +536,7 @@ if (assinatura) {
       link.click();
     }
 
-    carregarAtas();
+    verificarLoginInicial();
   </script>
 </body>
 </html>
