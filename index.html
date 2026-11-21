@@ -365,8 +365,10 @@
       carregarAtas();
     }
 
-    async function salvarMovimentacao() {
-      const itemId = document.getElementById("mov-item-id").value, tipo = document.getElementById("mov-tipo").value, qtd = parseFloat(document.getElementById("mov-qtd").value);
+        async function salvarMovimentacao() {
+      const itemId = document.getElementById("mov-item-id").value;
+      const tipo = document.getElementById("mov-tipo").value;
+      const qtd = parseFloat(document.getElementById("mov-qtd").value);
       if (!qtd || qtd <= 0) { alert("Informe uma quantidade válida!"); return; }
 
       await fetch(API_URL + "/movimentacoes_ata", {
@@ -375,10 +377,12 @@
       });
 
       const resItem = await fetch(API_URL + "/itens_ata?id=eq." + itemId, { headers: headers });
-      const itemAtual = (await resItem.json());
+      const listaItem = await resItem.json();
+      const itemAtual = listaItem;
       if (itemAtual) {
         const campo = tipo === "EMPENHO_PROPRIO" ? "qtd_empenhada" : "qtd_carona";
-        const bodyUpdate = {}; bodyUpdate[campo] = Number(itemAtual[campo] || 0) + qtd;
+        const bodyUpdate = {};
+        bodyUpdate[campo] = Number(itemAtual[campo] || 0) + qtd;
         await fetch(API_URL + "/itens_ata?id=eq." + itemId, { method: "PATCH", headers: headers, body: JSON.stringify(bodyUpdate) });
       }
       fecharModal("modal-movimentacao");
@@ -387,6 +391,26 @@
 
     async function excluirAta(ataId) {
       if (!confirm("Tem certeza que deseja excluir esta Ata e todos os seus itens?")) return;
+      await fetch(API_URL + "/atas?id=eq." + ataId, { method: "DELETE", headers: headers });
+      carregarAtas();
+    }
+
+    function exportarCSV() {
+      if (!atasCache.length) { alert("Nenhuma ata para exportar ainda."); return; }
+      let csv = "Pregao;Ata;Orgao;Portal;Item;Descricao;Marca;Qtd_Ata;Empenhada;Saldo_Proprio;Valor_Unit\n";
+      atasCache.forEach(function(a) {
+        (a.itens_ata || []).forEach(function(it) {
+          csv += [a.numero_pregao, a.numero_ata, a.orgao_nome, a.portal, it.numero_item, it.descricao, it.marca, it.qtd_registrada, it.qtd_empenhada || 0, Number(it.qtd_registrada) - Number(it.qtd_empenhada || 0), it.valor_unitario].join(";") + "\n";
+        });
+      });
+      const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "ALEXPER_Backup_Atas.csv";
+      link.click();
+    }
+
+    carregarAtas();
   </script>
 </body>
 </html>
