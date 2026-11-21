@@ -346,7 +346,11 @@
 
       const assinatura = document.getElementById("ata-assinatura").value;
       let vencimento = null;
-      if (assinatura) { const p = assinatura.split("-"); vencimento = (parseInt(p, 10) + 1) + "-" + p + "-" + p; }
+if (assinatura) {
+  const [ano, mes, dia] = assinatura.split("-").map(Number);
+  const dataVenc = new Date(ano + 1, mes - 1, dia);
+  vencimento = dataVenc.toISOString().split("T")[0];
+}
 
       const resAta = await fetch(API_URL + "/atas", {
         method: "POST", headers: headers,
