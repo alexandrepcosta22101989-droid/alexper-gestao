@@ -358,10 +358,9 @@ if (assinatura) {
       });
       if (!resAta.ok) { alert("Erro ao salvar Ata!"); return; }
       const novaAta = (await resAta.json());
-
       await fetch(API_URL + "/itens_ata", {
         method: "POST", headers: headers,
-        body: JSON.stringify([{ ata_id: novaAta.id, numero_item: document.getElementById("item-num").value.trim() || "1", descricao: desc, marca: document.getElementById("item-marca").value.trim(), unidade: document.getElementById("item-unid").value.trim() || "UN", qtd_registrada: qtd, valor_unitario: valor }])
+        body: JSON.stringify([{ ata_id: novaAta[0].id, numero_item: document.getElementById("item-num").value.trim() || "1", descricao: desc, marca: document.getElementById("item-marca").value.trim(), unidade: document.getElementById("item-unid").value.trim() || "UN", qtd_registrada: qtd, valor_unitario: valor }])
       });
 
       fecharModal("modal-nova-ata");
