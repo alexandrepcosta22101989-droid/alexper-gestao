@@ -4,9 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ALEXPER - Gestão Inteligente</title>
+ 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Arial, sans-serif; }
     body { background-color: #f4f7f9; color: #1e293b; min-height: 100vh; display: flex; }
+ .view-section { display: none; }
+.view-section.active { display: block; }
 
     /* Tela de Login (Bloqueio Inicial) */
     #tela-login { position: fixed; inset: 0; background: #0f293a; display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 16px; }
@@ -201,14 +204,14 @@
             <span class="tag-soon">Em Breve</span>
           </div>
 
-          <div class="hub-card" onclick="alert('Módulo em construção: Radar de Editais PNCP!')">
-            <div class="hub-icon">
-              <svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-            </div>
-            <h3>Encontrar Licitações</h3>
-            <p>Busca inteligente de oportunidades no PNCP</p>
-            <span class="tag-soon">Em Breve</span>
+                  <div class="hub-card" onclick="mudarTela('pncp')">
+          <div class="hub-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
           </div>
+          <h3>Encontrar Licitações</h3>
+          <p>Busca inteligente de oportunidades no PNCP</p>
+          <span class="tag-live">API Oficial</span>
+        </div>
 
           <div class="hub-card" onclick="exportarCSV()">
             <div class="hub-icon">
@@ -220,6 +223,51 @@
           </div>
         </div>
       </section>
+          <section id="view-pncp" class="view-section">
+      <div class="back-bar">
+        <button class="action-btn btn-outline" onclick="mudarTela('hub')">← Voltar ao Painel Inicial</button>
+      </div>
+
+      <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 18px; margin-bottom: 16px;">
+        <h2 style="font-size: 18px; color: #0f172a; margin-bottom: 4px;">🔎 Radar de Licitações Abertas (PNCP Oficial)</h2>
+        <p style="font-size: 13px; color: #64748b; margin-bottom: 14px;">Pesquise editais com propostas abertas diretamente na base nacional do Governo Federal.</p>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; align-items: end;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Palavra-chave do Objeto *</label>
+            <input type="text" id="pncp-termo" placeholder="Ex: medicamento, informática, expediente..." style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;" />
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Estado (UF)</label>
+            <select id="pncp-uf" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;">
+              <option value="">Todos os Estados</option>
+              <option value="RO" selected>Rondônia (RO)</option>
+              <option value="AC">Acre (AC)</option>
+              <option value="AM">Amazonas (AM)</option>
+              <option value="MT">Mato Grosso (MT)</option>
+              <option value="MS">Mato Grosso do Sul (MS)</option>
+              <option value="GO">Goiás (GO)</option>
+              <option value="SP">São Paulo (SP)</option>
+              <option value="PR">Paraná (PR)</option>
+              <option value="MG">Minas Gerais (MG)</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 4px;">Modalidade</label>
+            <select id="pncp-mod" style="width: 100%; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13.5px;">
+              <option value="6">Pregão Eletrônico</option>
+              <option value="8">Dispensa de Licitação</option>
+              <option value="">Todas</option>
+            </select>
+          </div>
+          <button class="action-btn" onclick="buscarEditaisPNCP()" style="background: #0284c7; color: #fff; padding: 10px 18px; border-radius: 8px; border: none; font-weight: 700; cursor: pointer;">Buscar no PNCP</button>
+        </div>
+      </div>
+
+      <div id="pncp-status" style="font-size: 13px; color: #475569; margin-bottom: 10px; font-weight: 600;"></div>
+      <div id="pncp-resultados" style="display: grid; gap: 12px;"></div>
+    </section>
+
       <section id="view-atas" class="view-section">
         <div class="back-bar">
           <button class="action-btn btn-outline" onclick="mudarTela('hub')">← Voltar ao Painel Inicial</button>
@@ -383,7 +431,61 @@
       document.getElementById("tela-login").style.display = "flex";
       mudarTela("hub");
     }
+          async function buscarEditaisPNCP() {
+      const termo = document.getElementById("pncp-termo").value.trim();
+      const uf = document.getElementById("pncp-uf").value;
+      const mod = document.getElementById("pncp-mod").value;
+      const statusEl = document.getElementById("pncp-status");
+      const listaEl = document.getElementById("pncp-resultados");
 
+      statusEl.innerText = "⏳ Consultando editais abertos no PNCP...";
+      listaEl.innerHTML = "";
+       const edgeUrl = "https://eysuytxytdsqsbldeyda" + ".supabase.co" + "/functions/v1/radar-pncp";
+      try {
+        const resp = await fetch(edgeUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ termo, uf, mod })
+        });
+        if (!resp.ok) throw new Error("Falha na Edge Function");
+        const json = await resp.json();
+        const itens = json.items || [];
+
+        if (itens.length === 0) {
+          statusEl.innerText = "Nenhum edital com proposta aberta encontrado para esse filtro.";
+          return;
+        }
+
+        statusEl.innerText = `✅ ${json.total || itens.length} edital(is) encontrado(s) com propostas abertas:`;
+
+        itens.forEach(ed => {
+          const orgao = ed.orgao_nome || "Órgão Público";
+          const cidade = ed.municipio_nome ? `${ed.municipio_nome}/${ed.uf}` : (ed.uf || "Brasil");
+          const valor = ed.valor_global ? Number(ed.valor_global).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "Sigiloso / Não informado";
+          const encerramento = ed.data_fim_vigencia ? new Date(ed.data_fim_vigencia).toLocaleString("pt-BR") : "Consultar edital";
+        const linkEdital = ed.item_url ? `https://pncp.gov.br${ed.item_url.replace("/compras/", "/editais/")}` : "https://pncp.gov.br";
+
+          const card = document.createElement("div");
+          card.style.cssText = "background:#ffffff; border:1.5px solid #cbd5e1; border-radius:10px; padding:14px 16px; display:flex; justify-content:space-between; gap:14px; align-items:center;";
+          card.innerHTML = `
+            <div style="flex:1; min-width:0;">
+              <div style="font-size:11.5px; font-weight:700; color:#0284c7; margin-bottom:3px;">🏛️ ${orgao} • 📍 ${cidade}</div>
+              <div style="font-size:14px; font-weight:700; color:#0f172a; margin-bottom:6px;">${ed.description || ed.title || "Sem descrição"}</div>
+              <div style="display:flex; flex-wrap:wrap; gap:14px; font-size:12px; color:#475569;">
+                <span>💰 <strong>Estimado:</strong> ${valor}</span>
+                <span>⏰ <strong>Prazo:</strong> ${encerramento}</span>
+                <span>📄 <strong>Modalidade:</strong> ${ed.modalidade_licitacao_nome || "Licitação"}</span>
+              </div>
+            </div>
+            <a href="${linkEdital}" target="_blank" style="background:#0f172a; color:#ffffff; text-decoration:none; padding:9px 14px; border-radius:8px; font-size:12px; font-weight:700; white-space:nowrap;">Abrir no PNCP ↗</a>
+          `;
+          listaEl.appendChild(card);
+        });
+      } catch (err) {
+        const linkBuscaDireta = "https://pncp.gov.br" + `/app/editais?q=${encodeURIComponent(termo)}&ufs=${uf}&status=recebendo_proposta`;
+        statusEl.innerHTML = `⚠️ O portal do PNCP oscilou ou demorou a responder. <button onclick="buscarEditaisPNCP()" style="background:#0284c7; color:#fff; border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-weight:700; margin:0 6px;">Tentar novamente</button> ou <a href="${linkBuscaDireta}" target="_blank" style="color:#0284c7; font-weight:700; text-decoration:underline;">Abrir direto no portal ↗</a>`;
+      }
+    }
     function mudarTela(tela) {
       document.querySelectorAll(".view-section").forEach(function(el) { el.classList.remove("active"); });
       document.querySelectorAll(".side-btn").forEach(function(el) { el.classList.remove("active"); });
